@@ -1,6 +1,6 @@
 {
   "installCommand": "pip install -r requirements.txt --break-system-packages",
-  "buildCommand": "mkdocs build",
+  "buildCommand": "python -m mkdocs build",
   "outputDirectory": "site",
   "framework": null
 }

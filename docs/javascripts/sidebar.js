@@ -46,7 +46,7 @@ const NAVIGATION_DATA = [
     id: 'inicio',
     label: 'Inicio',
     icon: 'home',
-    url: 'index.html'
+    url: '/manual/'
   },
   {
     id: 'modulos',
@@ -56,79 +56,79 @@ const NAVIGATION_DATA = [
         id: 'produtos',
         label: 'Produtos',
         icon: 'package',
-        url: 'modulos/produtos/'
+        url: '/manual/modulos/produtos/'
       },
       {
         id: 'clientes',
         label: 'Clientes',
         icon: 'users',
-        url: 'modulos/clientes/'
+        url: '/manual/modulos/clientes/'
       },
       {
         id: 'custos',
         label: 'Custos',
         icon: 'dollarSign',
-        url: 'modulos/custos/'
+        url: '/manual/modulos/custos/'
       },
       {
         id: 'pedidos',
         label: 'Pedidos',
         icon: 'shoppingCart',
-        url: 'modulos/pedidos/'
+        url: '/manual/modulos/pedidos/'
       },
       {
         id: 'producao',
         label: 'Producao',
         icon: 'factory',
-        url: 'modulos/producao/'
+        url: '/manual/modulos/producao/'
       },
       {
         id: 'expedicao',
         label: 'Expedicao',
         icon: 'truck',
-        url: 'modulos/expedicao/',
+        url: '/manual/modulos/expedicao/',
         children: [
           {
             id: 'expedicao-visao',
             label: 'Expedicao',
             icon: 'fileText',
-            url: 'modulos/expedicao/index.html'
+            url: '/manual/modulos/expedicao/'
           },
           {
             id: 'nfe-debitos',
             label: 'NFe Debitos',
             icon: 'creditCard',
-            url: 'modulos/expedicao/nfe-debitos/',
+            url: '/manual/modulos/expedicao/nfe-debitos/',
             children: [
               {
                 id: 'nfe-debitos-visao',
                 label: 'NFe Debitos',
                 icon: 'fileText',
-                url: 'modulos/expedicao/nfe-debitos/index.html'
+                url: '/manual/modulos/expedicao/nfe-debitos/'
               },
               {
                 id: 'nfe',
                 label: 'NFe',
                 icon: 'fileText',
-                url: 'modulos/expedicao/nfe-debitos/nfe.html'
+                url: '/manual/modulos/expedicao/nfe-debitos/nfe.html'
               },
               {
                 id: 'debito',
                 label: 'Debito',
                 icon: 'creditCard',
-                url: 'modulos/expedicao/nfe-debitos/debito.html'
+                url: '/manual/modulos/expedicao/nfe-debitos/debito.html'
               },
               {
                 id: 'multa',
                 label: 'Multa',
                 icon: 'scale',
-                url: 'modulos/expedicao/nfe-debitos/multa.html'
+                url: '/manual/modulos/expedicao/nfe-debitos/multa.html'
               },
               {
                 id: 'juros',
                 label: 'Juros',
                 icon: 'percent',
-                url: 'modulos/expedicao/nfe-debitos/juros.html'
+                url: '/manual/modulos/expedicao/nfe-debitos/juros.html'
               }
             ]
           }
@@ -138,37 +138,37 @@ const NAVIGATION_DATA = [
         id: 'compras',
         label: 'Compras',
         icon: 'store',
-        url: 'modulos/compras/'
+        url: '/manual/modulos/compras/'
       },
       {
         id: 'recebimento',
         label: 'Recebimento',
         icon: 'inbox',
-        url: 'modulos/recebimento/'
+        url: '/manual/modulos/recebimento/'
       },
       {
         id: 'pessoas',
         label: 'Pessoas',
         icon: 'userCheck',
-        url: 'modulos/pessoas/'
+        url: '/manual/modulos/pessoas/'
       },
       {
         id: 'marketplace',
         label: 'Marketplace',
         icon: 'globe',
-        url: 'modulos/marketplace/'
+        url: '/manual/modulos/marketplace/'
       },
       {
         id: 'indicadores',
         label: 'Indicadores',
         icon: 'barChart',
-        url: 'modulos/indicadores/'
+        url: '/manual/modulos/indicadores/'
       },
       {
         id: 'arquivos',
         label: 'Arquivos',
         icon: 'folder',
-        url: 'modulos/arquivos/'
+        url: '/manual/modulos/arquivos/'
       }
     ]
   },
@@ -180,13 +180,13 @@ const NAVIGATION_DATA = [
         id: 'extras',
         label: 'Extras',
         icon: 'puzzle',
-        url: 'extras.html'
+        url: '/manual/extras.html'
       },
       {
         id: 'ajuda',
         label: 'Ajuda',
         icon: 'helpCircle',
-        url: 'ajuda.html'
+        url: '/manual/ajuda.html'
       }
     ]
   }
@@ -446,13 +446,20 @@ class SyonSidebar {
       link.classList.remove('sidebar__link--active');
       const url = link.getAttribute('data-url');
       
-      if (url && currentUrl.includes(url.replace(/index\.html$/, '').replace(/\.html$/, ''))) {
-        link.classList.add('sidebar__link--active');
+      if (url) {
+        // Normalizar URLs para comparacao
+        const normalizedUrl = url.replace(/index\.html$/, '').replace(/\/$/, '');
+        const normalizedCurrent = currentUrl.replace(/index\.html$/, '').replace(/\/$/, '');
         
-        // Expandir pais
-        const item = link.closest('.sidebar__item');
-        if (item) {
-          this.expandItem(item);
+        // Verificar se a URL atual comeca com a URL do link
+        if (normalizedCurrent === normalizedUrl || normalizedCurrent.startsWith(normalizedUrl + '/')) {
+          link.classList.add('sidebar__link--active');
+          
+          // Expandir pais
+          const item = link.closest('.sidebar__item');
+          if (item) {
+            this.expandItem(item);
+          }
         }
       }
     });

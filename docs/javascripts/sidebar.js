@@ -491,6 +491,7 @@ class SyonSidebar {
   toggle() {
     this.isCollapsed = !this.isCollapsed;
     this.sidebar.classList.toggle('sidebar--collapsed', this.isCollapsed);
+    document.body.classList.toggle('sidebar-collapsed', this.isCollapsed);
     localStorage.setItem('sidebar-collapsed', this.isCollapsed);
   }
 
@@ -516,6 +517,7 @@ class SyonSidebar {
     if (saved === 'true') {
       this.isCollapsed = true;
       this.sidebar.classList.add('sidebar--collapsed');
+      document.body.classList.add('sidebar-collapsed');
     }
   }
 }

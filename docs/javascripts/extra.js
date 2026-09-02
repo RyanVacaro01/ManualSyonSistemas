@@ -1,18 +1,12 @@
-/* Custom JavaScript for Syon Manual */
+/* Custom JavaScript for Syon Manual - Black & White */
 
 // Enhanced search functionality
 document.addEventListener("DOMContentLoaded", function() {
-  // Initialize search enhancements
   initSearchEnhancements();
-  
-  // Initialize dark mode toggle enhancements
   initDarkModeEnhancements();
-  
-  // Initialize keyboard shortcuts
   initKeyboardShortcuts();
-  
-  // Initialize scroll to top
   initScrollToTop();
+  initNavigationCollapse();
 });
 
 /**
@@ -20,17 +14,18 @@ document.addEventListener("DOMContentLoaded", function() {
  */
 function initSearchEnhancements() {
   const searchInput = document.querySelector(".md-search__input");
-  const searchResults = document.querySelector(".md-search-result__list");
   
   if (searchInput) {
-    // Add search debounce
+    // Add placeholder
+    searchInput.placeholder = "Buscar... (Ctrl+K)";
+    
+    // Add search debounce with faster response
     let searchTimeout;
     searchInput.addEventListener("input", function(e) {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(function() {
-        // Custom search logic can be added here
         highlightSearchResults(e.target.value);
-      }, 300);
+      }, 150);
     });
     
     // Focus search on Ctrl+K or Cmd+K
@@ -38,33 +33,60 @@ function initSearchEnhancements() {
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
         searchInput.focus();
+        searchInput.select();
+      }
+      
+      // Escape to clear search
+      if (e.key === "Escape" && document.activeElement === searchInput) {
+        searchInput.value = "";
+        searchInput.blur();
+        clearSearchHighlights();
+      }
+    });
+    
+    // Clear highlights when search is cleared
+    searchInput.addEventListener("input", function(e) {
+      if (!e.target.value) {
+        clearSearchHighlights();
       }
     });
   }
 }
 
 /**
- * Highlight search results
+ * Highlight search results in content
  */
 function highlightSearchResults(query) {
-  if (!query) return;
+  if (!query || query.length < 2) {
+    clearSearchHighlights();
+    return;
+  }
   
   const content = document.querySelector(".md-content__inner");
   if (!content) return;
   
-  // Remove existing highlights
-  const existingHighlights = content.querySelectorAll(".search-highlight");
-  existingHighlights.forEach(function(el) {
-    el.classList.remove("search-highlight");
-  });
-  
-  if (query.length < 2) return;
+  // Remove existing highlights first
+  clearSearchHighlights();
   
   // Find and highlight matching text
   const walker = document.createTreeWalker(
     content,
     NodeFilter.SHOW_TEXT,
-    null,
+    {
+      acceptNode: function(node) {
+        // Skip script, style, and already highlighted elements
+        const parent = node.parentElement;
+        if (parent && (
+          parent.tagName === "SCRIPT" ||
+          parent.tagName === "STYLE" ||
+          parent.classList.contains("search-highlight") ||
+          parent.closest(".search-highlight")
+        )) {
+          return NodeFilter.FILTER_REJECT;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    },
     false
   );
   
@@ -73,7 +95,9 @@ function highlightSearchResults(query) {
     textNodes.push(walker.currentNode);
   }
   
-  const regex = new RegExp("(" + escapeRegex(query) + ")", "gi");
+  const escapedQuery = escapeRegex(query);
+  const regex = new RegExp("(" + escapedQuery + ")", "gi");
+  
   textNodes.forEach(function(node) {
     if (regex.test(node.textContent)) {
       const span = document.createElement("span");
@@ -84,6 +108,30 @@ function highlightSearchResults(query) {
       node.parentNode.replaceChild(span, node);
     }
   });
+  
+  // Scroll to first highlight
+  const firstHighlight = content.querySelector(".search-highlight");
+  if (firstHighlight) {
+    firstHighlight.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
+}
+
+/**
+ * Clear all search highlights
+ */
+function clearSearchHighlights() {
+  const content = document.querySelector(".md-content__inner");
+  if (!content) return;
+  
+  const highlights = content.querySelectorAll(".search-highlight");
+  highlights.forEach(function(el) {
+    const parent = el.parentNode;
+    parent.replaceChild(document.createTextNode(el.textContent), el);
+    parent.normalize();
+  });
 }
 
 /**
@@ -91,6 +139,47 @@ function highlightSearchResults(query) {
  */
 function escapeRegex(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Navigation collapse/expand functionality
+ */
+function initNavigationCollapse() {
+  // Find all expandable navigation items
+  const nestedItems = document.querySelectorAll(".md-nav__item--nested");
+  
+  nestedItems.forEach(function(item) {
+    const expandBtn = item.querySelector(":scope > .md-nav__expand");
+    const nestedList = item.querySelector(":scope > .md-nav__list");
+    
+    if (expandBtn && nestedList) {
+      // Set initial state - check if item or any child is active
+      const hasActiveChild = item.querySelector(".md-nav__item--active");
+      const isActive = item.classList.contains("md-nav__item--active") || hasActiveChild;
+      item.setAttribute("aria-expanded", isActive ? "true" : "false");
+      
+      // Add click handler
+      expandBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const isExpanded = item.getAttribute("aria-expanded") === "true";
+        item.setAttribute("aria-expanded", isExpanded ? "false" : "true");
+      });
+    }
+  });
+  
+  // Auto-expand all parent items that contain active pages
+  const activeItems = document.querySelectorAll(".md-nav__item--active");
+  activeItems.forEach(function(item) {
+    let parent = item.parentElement;
+    while (parent) {
+      if (parent.classList && parent.classList.contains("md-nav__item--nested")) {
+        parent.setAttribute("aria-expanded", "true");
+      }
+      parent = parent.parentElement;
+    }
+  });
 }
 
 /**
@@ -109,7 +198,6 @@ function initDarkModeEnhancements() {
       if (mutation.attributeName === "data-md-color-scheme") {
         const newTheme = document.body.getAttribute("data-md-color-scheme");
         localStorage.setItem("md-theme", newTheme);
-        updateThemeColors(newTheme);
       }
     });
   });
@@ -121,36 +209,10 @@ function initDarkModeEnhancements() {
 }
 
 /**
- * Update theme colors dynamically
- */
-function updateThemeColors(theme) {
-  const root = document.documentElement;
-  if (theme === "slate") {
-    root.style.setProperty("--md-background-fg-color", "#121212");
-    root.style.setProperty("--md-surface-fg-color", "#1e1e1e");
-  } else {
-    root.style.setProperty("--md-background-fg-color", "#ffffff");
-    root.style.setProperty("--md-surface-fg-color", "#ffffff");
-  }
-}
-
-/**
  * Keyboard shortcuts
  */
 function initKeyboardShortcuts() {
   document.addEventListener("keydown", function(e) {
-    // Ctrl/Cmd + N: New
-    if ((e.ctrlKey || e.metaKey) && e.key === "n") {
-      e.preventDefault();
-      showNotification("Atalho: Novo registro");
-    }
-    
-    // Ctrl/Cmd + S: Save
-    if ((e.ctrlKey || e.metaKey) && e.key === "s") {
-      e.preventDefault();
-      showNotification("Atalho: Salvar");
-    }
-    
     // Ctrl/Cmd + P: Print
     if ((e.ctrlKey || e.metaKey) && e.key === "p") {
       e.preventDefault();
@@ -168,29 +230,38 @@ function initKeyboardShortcuts() {
  * Show notification
  */
 function showNotification(message) {
+  // Remove existing notification
+  const existing = document.querySelector(".md-notification");
+  if (existing) existing.remove();
+  
   const notification = document.createElement("div");
   notification.className = "md-notification";
   notification.textContent = message;
+  
+  const isDark = document.body.getAttribute("data-md-color-scheme") === "slate";
+  
   notification.style.cssText = `
     position: fixed;
     bottom: 24px;
     right: 24px;
-    background: linear-gradient(135deg, #673ab7, #9c27b0);
-    color: white;
+    background: ${isDark ? "#ffffff" : "#000000"};
+    color: ${isDark ? "#000000" : "#ffffff"};
     padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(103, 58, 183, 0.4);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-    animation: slideIn 0.3s ease;
+    animation: slideIn 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
   `;
   
   document.body.appendChild(notification);
   
   setTimeout(function() {
-    notification.style.animation = "slideOut 0.3s ease";
+    notification.style.animation = "slideOut 0.2s ease";
     setTimeout(function() {
       notification.remove();
-    }, 300);
+    }, 200);
   }, 2000);
 }
 
@@ -208,27 +279,30 @@ function closeAllModals() {
  * Scroll to top functionality
  */
 function initScrollToTop() {
-  // Create scroll to top button
   const scrollToTopBtn = document.createElement("button");
   scrollToTopBtn.className = "scroll-to-top";
   scrollToTopBtn.innerHTML = "↑";
+  
+  const isDark = document.body.getAttribute("data-md-color-scheme") === "slate";
+  
   scrollToTopBtn.style.cssText = `
     position: fixed;
     bottom: 24px;
-    left: 24px;
-    width: 48px;
-    height: 48px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #673ab7, #9c27b0);
-    color: white;
+    background: ${isDark ? "#ffffff" : "#000000"};
+    color: ${isDark ? "#000000" : "#ffffff"};
     border: none;
     cursor: pointer;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(103, 58, 183, 0.4);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     z-index: 999;
-    font-size: 20px;
+    font-size: 18px;
+    font-weight: bold;
   `;
   
   document.body.appendChild(scrollToTopBtn);
@@ -254,11 +328,11 @@ function initScrollToTop() {
   
   // Hover effect
   scrollToTopBtn.addEventListener("mouseenter", function() {
-    this.style.transform = "translateY(-4px)";
+    this.style.transform = "scale(1.1)";
   });
   
   scrollToTopBtn.addEventListener("mouseleave", function() {
-    this.style.transform = "translateY(0)";
+    this.style.transform = "scale(1)";
   });
 }
 
@@ -277,37 +351,6 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
     }
   });
 });
-
-/**
- * Add animation to cards on scroll
- */
-function animateCardsOnScroll() {
-  const cards = document.querySelectorAll(".module-card");
-  
-  const observer = new IntersectionObserver(
-    function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          entry.target.style.opacity = "1";
-          entry.target.style.transform = "translateY(0)";
-        }
-      });
-    },
-    { threshold: 0.1 }
-  );
-  
-  cards.forEach(function(card) {
-    card.style.opacity = "0";
-    card.style.transform = "translateY(20px)";
-    card.style.transition = "all 0.5s ease";
-    observer.observe(card);
-  });
-}
-
-// Initialize card animations when on homepage
-if (document.querySelector(".module-grid")) {
-  animateCardsOnScroll();
-}
 
 /**
  * Copy code button functionality
@@ -352,14 +395,29 @@ style.textContent = `
   }
   
   .search-highlight {
-    background: linear-gradient(135deg, #673ab7, #9c27b0);
-    color: white;
-    padding: 2px 4px;
-    border-radius: 4px;
+    background: #000000;
+    color: #ffffff;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 500;
   }
   
   [data-md-color-scheme="slate"] .search-highlight {
-    background: linear-gradient(135deg, #9575cd, #ce93d8);
+    background: #ffffff;
+    color: #000000;
+  }
+  
+  /* Search result styling */
+  .md-search-result__link {
+    transition: background-color 0.15s ease;
+  }
+  
+  .md-search-result__link:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  [data-md-color-scheme="slate"] .md-search-result__link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
   }
 `;
 document.head.appendChild(style);

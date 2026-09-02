@@ -118,11 +118,11 @@ Bem-vindo ao manual completo do sistema ERP Syon.
 
 ## Acesso Rapido
 
-- [Produtos](modulos/produtos.md) - Cadastro e gestao de produtos
-- [Clientes](modulos/clientes.md) - Gestao de clientes e parceiros
-- [Pedidos](modulos/pedidos.md) - Processamento de pedidos
-- [Producao](modulos/producao.md) - Controle de producao industrial
-- [Indicadores](modulos/indicadores.md) - Dashboards e relatorios
+- [Produtos](modulos/produtos/index.md) - Cadastro e gestao de produtos
+- [Clientes](modulos/clientes/index.md) - Gestao de clientes e parceiros
+- [Pedidos](modulos/pedidos/index.md) - Processamento de pedidos
+- [Producao](modulos/producao/index.md) - Controle de producao industrial
+- [Indicadores](modulos/indicadores/index.md) - Dashboards e relatorios
 
 ---
 

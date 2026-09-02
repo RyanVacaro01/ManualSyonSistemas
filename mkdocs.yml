@@ -8,15 +8,15 @@ theme:
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: deep purple
-      accent: purple
+      primary: black
+      accent: black
       toggle:
         icon: material/brightness-7
         name: Modo Escuro
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: deep purple
-      accent: purple
+      primary: black
+      accent: black
       toggle:
         icon: material/brightness-4
         name: Modo Claro
@@ -33,16 +33,19 @@ theme:
     - navigation.expand
     - navigation.path
     - navigation.top
+    - navigation.indexes
     - search.suggest
     - search.highlight
+    - search.result
     - content.code.copy
     - content.tabs.link
 
 plugins:
   - search:
       lang: pt
-      separator: '[\s\-]+'
       preprocessor: null
+      min_length: 2
+      separator: '[\s\-\.]+'
 
 markdown_extensions:
   - admonition
@@ -61,9 +64,11 @@ markdown_extensions:
 
 extra_css:
   - stylesheets/extra.css
+  - stylesheets/sidebar.css
 
 extra_javascript:
   - javascripts/extra.js
+  - javascripts/sidebar.js
 
 extra:
   social:
@@ -74,17 +79,24 @@ extra:
 nav:
   - Inicio: index.md
   - Modulos:
-      - modulos/produtos.md
-      - modulos/clientes.md
-      - modulos/custos.md
-      - modulos/pedidos.md
-      - modulos/producao.md
-      - modulos/expedicao.md
-      - modulos/compras.md
-      - modulos/recebimento.md
-      - modulos/pessoas.md
-      - modulos/marketplace.md
-      - modulos/indicadores.md
-      - modulos/arquivos.md
+      - Produtos: modulos/produtos/index.md
+      - Clientes: modulos/clientes/index.md
+      - Custos: modulos/custos/index.md
+      - Pedidos: modulos/pedidos/index.md
+      - Producao: modulos/producao/index.md
+      - Expedicao:
+          - Expedicao: modulos/expedicao/index.md
+          - NFe Debitos:
+              - NFe Debitos: modulos/expedicao/nfe-debitos/index.md
+              - NFe: modulos/expedicao/nfe-debitos/nfe.md
+              - Debito: modulos/expedicao/nfe-debitos/debito.md
+              - Multa: modulos/expedicao/nfe-debitos/multa.md
+              - Juros: modulos/expedicao/nfe-debitos/juros.md
+      - Compras: modulos/compras/index.md
+      - Recebimento: modulos/recebimento/index.md
+      - Pessoas: modulos/pessoas/index.md
+      - Marketplace: modulos/marketplace/index.md
+      - Indicadores: modulos/indicadores/index.md
+      - Arquivos: modulos/arquivos/index.md
   - Extras: extras.md
   - Ajuda: ajuda.md

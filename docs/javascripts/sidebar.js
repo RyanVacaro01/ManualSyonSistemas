@@ -41,12 +41,25 @@ const LUCIDE_ICONS = {
 };
 
 // --- Estrutura de Dados da Navegacao ---
+// Detectar base path automaticamente (local: / | producao: /manual/)
+function getBasePath() {
+  var path = window.location.pathname;
+  if (path.indexOf('/manual/') !== -1) return '/manual/';
+  return '/';
+}
+
+var BASE = getBasePath();
+
+function url(relativePath) {
+  return BASE + relativePath;
+}
+
 const NAVIGATION_DATA = [
   {
     id: 'inicio',
     label: 'Inicio',
     icon: 'home',
-    url: '/manual/'
+    url: url('')
   },
   {
     id: 'modulos',
@@ -56,79 +69,79 @@ const NAVIGATION_DATA = [
         id: 'produtos',
         label: 'Produtos',
         icon: 'package',
-        url: '/manual/modulos/produtos/'
+        url: url('modulos/produtos/')
       },
       {
         id: 'clientes',
         label: 'Clientes',
         icon: 'users',
-        url: '/manual/modulos/clientes/'
+        url: url('modulos/clientes/')
       },
       {
         id: 'custos',
         label: 'Custos',
         icon: 'dollarSign',
-        url: '/manual/modulos/custos/'
+        url: url('modulos/custos/')
       },
       {
         id: 'pedidos',
         label: 'Pedidos',
         icon: 'shoppingCart',
-        url: '/manual/modulos/pedidos/'
+        url: url('modulos/pedidos/')
       },
       {
         id: 'producao',
         label: 'Producao',
         icon: 'factory',
-        url: '/manual/modulos/producao/'
+        url: url('modulos/producao/')
       },
       {
         id: 'expedicao',
         label: 'Expedicao',
         icon: 'truck',
-        url: '/manual/modulos/expedicao/',
+        url: url('modulos/expedicao/'),
         children: [
           {
             id: 'expedicao-visao',
             label: 'Expedicao',
             icon: 'fileText',
-            url: '/manual/modulos/expedicao/'
+            url: url('modulos/expedicao/')
           },
           {
             id: 'nfe-debitos',
             label: 'NFe Debitos',
             icon: 'creditCard',
-            url: '/manual/modulos/expedicao/nfe-debitos/',
+            url: url('modulos/expedicao/nfe-debitos/'),
             children: [
               {
                 id: 'nfe-debitos-visao',
                 label: 'NFe Debitos',
                 icon: 'fileText',
-                url: '/manual/modulos/expedicao/nfe-debitos/'
+                url: url('modulos/expedicao/nfe-debitos/')
               },
               {
                 id: 'nfe',
                 label: 'NFe',
                 icon: 'fileText',
-                url: '/manual/modulos/expedicao/nfe-debitos/nfe.html'
+                url: url('modulos/expedicao/nfe-debitos/nfe.html')
               },
               {
                 id: 'debito',
                 label: 'Debito',
                 icon: 'creditCard',
-                url: '/manual/modulos/expedicao/nfe-debitos/debito.html'
+                url: url('modulos/expedicao/nfe-debitos/debito.html')
               },
               {
                 id: 'multa',
                 label: 'Multa',
                 icon: 'scale',
-                url: '/manual/modulos/expedicao/nfe-debitos/multa.html'
+                url: url('modulos/expedicao/nfe-debitos/multa.html')
               },
               {
                 id: 'juros',
                 label: 'Juros',
                 icon: 'percent',
-                url: '/manual/modulos/expedicao/nfe-debitos/juros.html'
+                url: url('modulos/expedicao/nfe-debitos/juros.html')
               }
             ]
           }
@@ -138,37 +151,37 @@ const NAVIGATION_DATA = [
         id: 'compras',
         label: 'Compras',
         icon: 'store',
-        url: '/manual/modulos/compras/'
+        url: url('modulos/compras/')
       },
       {
         id: 'recebimento',
         label: 'Recebimento',
         icon: 'inbox',
-        url: '/manual/modulos/recebimento/'
+        url: url('modulos/recebimento/')
       },
       {
         id: 'pessoas',
         label: 'Pessoas',
         icon: 'userCheck',
-        url: '/manual/modulos/pessoas/'
+        url: url('modulos/pessoas/')
       },
       {
         id: 'marketplace',
         label: 'Marketplace',
         icon: 'globe',
-        url: '/manual/modulos/marketplace/'
+        url: url('modulos/marketplace/')
       },
       {
         id: 'indicadores',
         label: 'Indicadores',
         icon: 'barChart',
-        url: '/manual/modulos/indicadores/'
+        url: url('modulos/indicadores/')
       },
       {
         id: 'arquivos',
         label: 'Arquivos',
         icon: 'folder',
-        url: '/manual/modulos/arquivos/'
+        url: url('modulos/arquivos/')
       }
     ]
   },
@@ -180,13 +193,13 @@ const NAVIGATION_DATA = [
         id: 'extras',
         label: 'Extras',
         icon: 'puzzle',
-        url: '/manual/extras.html'
+        url: url('extras.html')
       },
       {
         id: 'ajuda',
         label: 'Ajuda',
         icon: 'helpCircle',
-        url: '/manual/ajuda.html'
+        url: url('ajuda.html')
       }
     ]
   }
